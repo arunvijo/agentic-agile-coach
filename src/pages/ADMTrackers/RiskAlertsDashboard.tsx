@@ -1,12 +1,11 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
 import {
-  AlertTriangle, TrendingDown, Clock, Bug, Users, CheckCircle, X, Eye, Bell, BellOff, Archive, LogOut
+  AlertTriangle, TrendingDown, Clock, Bug, CheckCircle, X, Eye, Bell, BellOff, Archive, LogOut
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
-import { handleLogout, useAuthStatus } from '../Index';
+import { handleLogout } from '../Index'; // ⬅️ no auth hook import
 
 // Minimal keyframes only for slide-in (no color overrides)
 const SlideInKeyframes = (
@@ -42,9 +41,10 @@ const RiskAlertsDashboard = () => {
   const [showNotification, setShowNotification] = useState(true);
   const [showDetailsModal, setShowDetailsModal] = useState(false);
   const [selectedRisk, setSelectedRisk] = useState<Risk | null>(null);
-
-  const { user, isAuthReady } = useAuthStatus();
   const { toast } = useToast();
+
+  // Demo user to match other pages
+  const user = { email: 'test.adm@example.com' };
 
   const [risks, setRisks] = useState<Risk[]>([
     {
@@ -151,18 +151,6 @@ const RiskAlertsDashboard = () => {
   const trendTone = (trend: Risk['trend']) =>
     trend === 'Downward' ? 'text-rose-600' : trend === 'Upward' ? 'text-amber-600' : 'text-foreground';
 
-  // Guard (consistent with other pages)
-  if (!isAuthReady) {
-    return (
-      <div className="flex min-h-screen items-center justify-center bg-[conic-gradient(at_top_left,_var(--tw-gradient-stops))] from-muted/40 via-background to-muted/30">
-        <div className="rounded-2xl border bg-card/80 px-5 py-3 text-muted-foreground shadow-sm backdrop-blur">
-          Loading Risk Dashboard…
-        </div>
-      </div>
-    );
-  }
-  if (!user) return <div />;
-
   return (
     <div
       className="
@@ -186,7 +174,7 @@ const RiskAlertsDashboard = () => {
           <h1 className="text-xl font-semibold tracking-tight">Risk Alerts Dashboard</h1>
           <div className="flex items-center gap-2 sm:gap-4">
             <span className="hidden text-sm text-muted-foreground sm:inline">
-              Welcome, {user?.email}
+              Welcome, {user.email}
             </span>
 
             <div className="relative">
@@ -209,7 +197,8 @@ const RiskAlertsDashboard = () => {
               )}
             </div>
 
-            <Button onClick={() => handleLogout(useToast().toast)} variant="outline" size="sm" className="gap-2 rounded-xl">
+            {/* ✅ use the existing toast */}
+            <Button onClick={() => handleLogout(toast)} variant="outline" size="sm" className="gap-2 rounded-xl">
               <LogOut className="h-4 w-4" />
               Logout
             </Button>
@@ -364,13 +353,8 @@ const RiskAlertsDashboard = () => {
                         </td>
                         <td className="py-3 px-4">{risk.team}</td>
                         <td className="py-3 px-4">
-                          <span
-                            className={`rounded-full border px-3 py-1 text-xs font-semibold ${severityPill(
-                              risk.severity
-                            )}`}
-                          >
-                            {risk.severity === 'High' ? '🔴' : risk.severity === 'Medium' ? '🟠' : '🟡'}{' '}
-                            {risk.severity}
+                          <span className={`rounded-full border px-3 py-1 text-xs font-semibold ${severityPill(risk.severity)}`}>
+                            {risk.severity === 'High' ? '🔴' : risk.severity === 'Medium' ? '🟠' : '🟡'} {risk.severity}
                           </span>
                         </td>
                         <td className="py-3 px-4 text-muted-foreground">{risk.detectedOn}</td>
