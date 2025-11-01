@@ -688,19 +688,7 @@ const AgileDependencyHeatmap = () => {
         </div>
       )}
 
-      {aiInsightsOn && (
-        <div className="absolute bottom-4 left-4 max-w-[80%] sm:max-w-md rounded-lg bg-primary p-3 sm:p-4 text-primary-foreground shadow-xl">
-          <div className="flex items-start gap-2 sm:gap-3">
-            <Brain className="mt-0.5 h-4 w-4 sm:h-5 sm:w-5" />
-            <div>
-              <p className="mb-1 text-xs sm:text-sm font-semibold">AI Live Analysis</p>
-              <p className="text-[10px] sm:text-xs opacity-90">
-                Monitoring {deps.length} dependencies across {teams.length} teams. {deps.filter((d: any) => d.risk === 'high').length} high-risk items require attention.
-              </p>
-            </div>
-          </div>
-        </div>
-      )}
+     
     </div>
   );
 
